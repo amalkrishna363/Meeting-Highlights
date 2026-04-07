@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from utils.transcriber import transcribe_audio
-from utils.extractor import generate_summary, extract_action_items
+from utils.extractor import generate_summary, extract_action_items, chat_with_transcript
 
 
 FFMPEG_PATH = r"C:\Users\Amal\AppData\Local\Microsoft\WinGet\Links\ffmpeg.exe"
@@ -127,6 +127,19 @@ def process_video():
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
 
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+        message = data.get("message", "").strip()
+        transcript = data.get("transcript", "").strip()
+        if not message:
+            return jsonify({"error": "No message"}), 400
+        reply = chat_with_transcript(message, transcript)
+        return jsonify({"reply": reply})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/convert", methods=["POST"])
 def convert_video():

@@ -25,6 +25,21 @@ def generate_summary(transcript):
     combined = "\n".join(chunk_summaries)
     return _chat(f"Combine these summaries into one concise summary:\n\n{combined}")
 
+def chat_with_transcript(message, transcript):
+    if transcript:
+        prompt = (
+            f"You are an AI assistant. The user has a meeting transcript below.\n"
+            f"Answer the user's question based on the transcript. "
+            f"If the answer is not in the transcript, say so honestly.\n\n"
+            f"Transcript:\n{transcript[:MAX_CHARS]}\n\nQuestion: {message}"
+        )
+    else:
+        prompt = (
+            f"You are an AI assistant for a meeting tool called Action Log. "
+            f"No transcript is available yet. Answer helpfully: {message}"
+        )
+    return _chat(prompt)
+
 def extract_action_items(transcript):
     chunks = _chunk_text(transcript)
     all_items = []
